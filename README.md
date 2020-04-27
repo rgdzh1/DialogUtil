@@ -1,5 +1,5 @@
 ### DialogUtil
-[wiki](https://github.com/hss01248/DialogUtil/wiki)
+[源码解析文章](https://blog.csdn.net/MoLiao2046/article/details/105795020)
 #### 使用
 **Step 1.** Add the JitPack repository to your build file
 
