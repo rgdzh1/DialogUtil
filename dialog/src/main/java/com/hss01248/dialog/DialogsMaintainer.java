@@ -12,6 +12,7 @@ import java.util.Set;
 
 /**
  * Created by hss on 2018/3/24.
+ * 该类是用来维护Dialog的
  */
 
 public class DialogsMaintainer {
@@ -81,7 +82,7 @@ public class DialogsMaintainer {
     }
 
     public static void addWhenShow(Context context, Dialog dialog) {
-
+        // 这个方法的主要作用是将context对应的Activity与Activity中的dialog对象对应起来用一个Map集合管理起来
         if (!(context instanceof Activity)) {
             return;
         }
@@ -90,14 +91,18 @@ public class DialogsMaintainer {
 
         Set<Dialog> dialogs = null;
         if (dialogsOfActivity.containsKey(activity)) {
+            // 这个Activity是否存在于dialogsOfActivity集合中
+            // 如果存在就取出该Activity对应的Dialog set集合
             dialogs = dialogsOfActivity.get(activity);
         }
         if (dialogs == null) {
+            // 如果这个Dialog set集合不存在就创建一个集合
+            // 并且将该set集合与Activity对象存入dialogsOfActivity Map中
             dialogs = new HashSet<>();
             dialogsOfActivity.put(activity, dialogs);
         }
+        // 最后将Dialog对象存入set集合中
         dialogs.add(dialog);
-
     }
 
     public static void removeWhenDismiss(Dialog dialog) {

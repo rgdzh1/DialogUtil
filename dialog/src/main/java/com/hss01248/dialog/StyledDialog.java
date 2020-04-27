@@ -52,13 +52,8 @@ public class StyledDialog {
 
     public static void init(Context context) {
         StyledDialog.context = context;
-       /* String userAgent = System.getProperty("http.agent");
-        if((!TextUtils.isEmpty(userAgent)) && userAgent.contains("MIUI") && userAgent.contains("V8")){
-            isMiUi8 = true;
-        }*/
         mainHandler = new Handler(Looper.getMainLooper());
         DefaultConfig.initBtnTxt(context);
-
     }
 
 
@@ -148,6 +143,7 @@ public class StyledDialog {
     }
 
     public static ConfigBean buildLoading(CharSequence msg) {
+        // 获取一个Dialog配置对象,然后通过自己的要求获取一个Dialog配置对象ConfigBean,最后再调用ConfigBean对象的show方法.
         return DialogAssigner.getInstance().assignLoading(null, msg, true, false);
     }
 

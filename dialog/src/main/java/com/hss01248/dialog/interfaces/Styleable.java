@@ -15,7 +15,7 @@ public interface Styleable {
 
     ConfigBean setBtnColor(@ColorRes int btn1Color, @ColorRes int btn2Color, @ColorRes int btn3Color);
 
-    ConfigBean setListItemColor(@ColorRes int lvItemTxtColor,Map<Integer,Integer> colorOfPosition);
+    ConfigBean setListItemColor(@ColorRes int lvItemTxtColor, Map<Integer, Integer> colorOfPosition);
 
     ConfigBean setTitleColor(@ColorRes int colorRes);
     ConfigBean setMsgColor(@ColorRes int colorRes);
@@ -41,7 +41,7 @@ public interface Styleable {
 
 
 
-    ConfigBean setCancelable(boolean cancelable,boolean outsideCancelable);
+    ConfigBean setCancelable(boolean cancelable, boolean outsideCancelable);
 
 
 

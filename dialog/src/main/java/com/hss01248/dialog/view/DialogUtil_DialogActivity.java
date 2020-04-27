@@ -19,8 +19,6 @@ public class DialogUtil_DialogActivity extends Activity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
     }
 
     public void show(ConfigBean bean){

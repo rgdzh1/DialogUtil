@@ -39,7 +39,6 @@ public class MdInputHolder extends SuperLvHolder<ConfigBean> {
     public void assingDatasAndEvents(Context context, ConfigBean bean) {
         this.bean = bean;
         setInputStyle(context,bean);
-
     }
 
     public String getTxt1(){

@@ -35,122 +35,128 @@ import java.util.List;
 /**
  * Created by Administrator on 2016/10/9.
  */
-public  class MyDialogBuilder {
+public class MyDialogBuilder {
 
     protected static int singleChosen;
-   protected  ConfigBean buildByType(ConfigBean bean){
 
+    protected ConfigBean buildByType(ConfigBean bean) {
         Tool.fixContext(bean);
+        switch (bean.type) {
+            case DefaultConfig.TYPE_MD_LOADING:
+                Tool.newCustomDialog(bean);// 创建Dialog
+                buildMdLoading(bean);// 内容填充
+                break;
+            case DefaultConfig.TYPE_PROGRESS:
+                buildProgress(bean);
+                break;
+            case DefaultConfig.TYPE_MD_ALERT:
+            case DefaultConfig.TYPE_MD_INPUT:
+                if (bean.context instanceof Activity && !bean.showAsActivity) {
+                    buildMdAlert(bean);
+                } else {
+                    buildMyMd(bean);
+                }
 
-       switch (bean.type){
-           case DefaultConfig.TYPE_MD_LOADING:
-               Tool.newCustomDialog(bean);
-               buildMdLoading(bean);
-               break;
-           case DefaultConfig.TYPE_PROGRESS:
-               buildProgress(bean);
-               break;
-           case DefaultConfig.TYPE_MD_ALERT:
-           case DefaultConfig.TYPE_MD_INPUT:
-               if(bean.context instanceof Activity && !bean.showAsActivity){
-                   buildMdAlert(bean);
-               }else {
-                   buildMyMd(bean);
-               }
+                break;
+            case DefaultConfig.TYPE_MD_SINGLE_CHOOSE:
+                if (bean.context instanceof Activity && !bean.showAsActivity) {
+                    buildMdSingleChoose(bean);
+                } else {
+                    buildMyMd(bean);
+                }
 
-               break;
-           case DefaultConfig.TYPE_MD_SINGLE_CHOOSE:
-               if(bean.context instanceof Activity && !bean.showAsActivity){
-                   buildMdSingleChoose(bean);
-               }else {
-                   buildMyMd(bean);
-               }
+                break;
+            case DefaultConfig.TYPE_MD_MULTI_CHOOSE:
+                if (bean.context instanceof Activity && !bean.showAsActivity) {
+                    buildMdMultiChoose(bean);
+                } else {
+                    buildMyMd(bean);
+                }
 
-               break;
-           case DefaultConfig.TYPE_MD_MULTI_CHOOSE:
-               if(bean.context instanceof Activity && !bean.showAsActivity){
-                   buildMdMultiChoose(bean);
-               }else {
-                   buildMyMd(bean);
-               }
-
-               break;
-           case DefaultConfig.TYPE_IOS_HORIZONTAL:
-               Tool.newCustomDialog(bean);
-               buildIosAlert(bean);
-               break;
-           case DefaultConfig.TYPE_IOS_VERTICAL:
-               Tool.newCustomDialog(bean);
-               buildIosAlertVertical(bean);
-               break;
-           case DefaultConfig.TYPE_IOS_BOTTOM:
-               Tool.newCustomDialog(bean);
-               buildBottomItemDialog(bean);
-               break;
-           case DefaultConfig.TYPE_IOS_INPUT:
-               Tool.newCustomDialog(bean);
-               buildNormalInput(bean);
-               break;
-           case DefaultConfig.TYPE_IOS_CENTER_LIST:
-               Tool.newCustomDialog(bean);
-               buildIosSingleChoose(bean);
-               break;
-           case DefaultConfig.TYPE_CUSTOM_VIEW:
-               Tool.newCustomDialog(bean);
-               View rootView = getCustomRootView(bean);
-               bean.dialog.setContentView(rootView);
-               break;
-           case DefaultConfig.TYPE_BOTTOM_SHEET_CUSTOM:
-              buildBottomSheet(bean);
-
-
-               break;
-           case DefaultConfig.TYPE_BOTTOM_SHEET_LIST:
-               buildBottomSheetLv(bean);
+                break;
+            case DefaultConfig.TYPE_IOS_HORIZONTAL:
+                Tool.newCustomDialog(bean);
+                buildIosAlert(bean);
+                break;
+            case DefaultConfig.TYPE_IOS_VERTICAL:
+                Tool.newCustomDialog(bean);
+                buildIosAlertVertical(bean);
+                break;
+            case DefaultConfig.TYPE_IOS_BOTTOM:
+                Tool.newCustomDialog(bean);
+                buildBottomItemDialog(bean);
+                break;
+            case DefaultConfig.TYPE_IOS_INPUT:
+                Tool.newCustomDialog(bean);
+                buildNormalInput(bean);
+                break;
+            case DefaultConfig.TYPE_IOS_CENTER_LIST:
+                Tool.newCustomDialog(bean);
+                buildIosSingleChoose(bean);
+                break;
+            case DefaultConfig.TYPE_CUSTOM_VIEW:
+                Tool.newCustomDialog(bean);
+                View rootView = getCustomRootView(bean);
+                bean.dialog.setContentView(rootView);
+                break;
+            case DefaultConfig.TYPE_BOTTOM_SHEET_CUSTOM:
+                buildBottomSheet(bean);
 
 
-               break;
-           case DefaultConfig.TYPE_BOTTOM_SHEET_GRID:
-               buildBottomSheetLv(bean);
-
-               break;
-
-           case DefaultConfig.TYPE_IOS_LOADING:
-               Tool.newCustomDialog(bean);
-               buildLoading(bean);
-               break;
-          default:
-              break;
+                break;
+            case DefaultConfig.TYPE_BOTTOM_SHEET_LIST:
+                buildBottomSheetLv(bean);
 
 
-       }
+                break;
+            case DefaultConfig.TYPE_BOTTOM_SHEET_GRID:
+                buildBottomSheetLv(bean);
 
-       Dialog dialog = bean.dialog ==null ? bean.alertDialog : bean.dialog;
-       Window window = dialog.getWindow();
-       window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-       Tool.setWindowAnimation(window, bean);
-       Tool.setCancelable(bean);
-       Tool.setListener(dialog,bean);
+                break;
 
-       Tool.adjustStyle(bean);
-       return bean;
-   }
+            case DefaultConfig.TYPE_IOS_LOADING:
+                // 就是根据不同的Dialog配置对象类型风格,创建真正的Dialog对象,
+                // 创建的Dilaog对象又放入进ConfigBean对象中了.
+                Tool.newCustomDialog(bean);
+                // 这里的一步就是对Dialog中进行内容的填充,比如你想要的文字,动画等等.
+                buildLoading(bean);
+                break;
+            default:
+                break;
+
+
+        }
+        Dialog dialog = bean.dialog == null ? bean.alertDialog : bean.dialog;
+        // 获取dialog所在的窗口, 这个是在创建Dialog时候创建的.
+        Window window = dialog.getWindow();
+        // 设置窗口半透明
+        window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        // 这个方法是根据Dialog配置对象中的gravity变量来设置Dialog进出场动画的.
+        Tool.setWindowAnimation(window, bean);
+        // 这个方法是根据Dialog配置对象中的cancelable变量来设置Dialog是否触摸到外部直接隐藏Dialog的
+        Tool.setCancelable(bean);
+        // 设置很多相关的监听, 主要是将Dialog与Activity用Map集合相应的保管起来
+        Tool.setListener(dialog, bean);
+        // 调整很多参数
+        Tool.adjustStyle(bean);
+        return bean;
+    }
 
     private View getCustomRootView(ConfigBean bean) {
 
-        if(bean.customContentHolder!=null){
+        if (bean.customContentHolder != null) {
             Tool.removeFromParent(bean.customContentHolder.rootView);
-            if(bean.asAdXStyle){
+            if (bean.asAdXStyle) {
                 AdXHolder adXHolder = new AdXHolder(bean.context);
-                adXHolder.assingDatasAndEvents(bean.context,bean);
+                adXHolder.assingDatasAndEvents(bean.context, bean);
                 return adXHolder.rootView;
             }
             return bean.customContentHolder.rootView;
-        }else {
+        } else {
             Tool.removeFromParent(bean.customView);
-            if(bean.asAdXStyle){
+            if (bean.asAdXStyle) {
                 AdXHolder adXHolder = new AdXHolder(bean.context);
-                adXHolder.assingDatasAndEvents(bean.context,bean);
+                adXHolder.assingDatasAndEvents(bean.context, bean);
                 return adXHolder.rootView;
             }
             return bean.customView;
@@ -162,7 +168,7 @@ public  class MyDialogBuilder {
         Tool.newCustomDialog(bean);
         MaterialDialogHolder holder = new MaterialDialogHolder(bean.context);
         bean.viewHolder = holder;
-        holder.assingDatasAndEvents(bean.context,bean);
+        holder.assingDatasAndEvents(bean.context, bean);
         bean.dialog.setContentView(holder.rootView);
     }
 
@@ -171,34 +177,33 @@ public  class MyDialogBuilder {
         ProgressDialog dialog = new ProgressDialog(bean.context);
         dialog.setTitle("");
         dialog.setMessage(bean.msg);
-        dialog.setProgressStyle(bean.isProgressHorzontal ? ProgressDialog.STYLE_HORIZONTAL:ProgressDialog.STYLE_SPINNER);
+        dialog.setProgressStyle(bean.isProgressHorzontal ? ProgressDialog.STYLE_HORIZONTAL : ProgressDialog.STYLE_SPINNER);
         dialog.setIndeterminate(false);
         bean.dialog = dialog;
     }
 
 
-
     private void buildBottomSheetLv(final ConfigBean bean) {
-         Dialog dialog = null;
-       if(bean.hasBehaviour){
+        Dialog dialog = null;
+        if (bean.hasBehaviour) {
             dialog = new RightMdBottomSheetDialog(bean.context);
-           bean.forceWidthPercent = 1.0f;
-       }else {
-           Tool.newCustomDialog(bean);
-           dialog = bean.dialog;
-           bean.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
-           bean.forceWidthPercent = 1.0f;
-           bean.bgRes = R.color.dialogutil_bg_white;
-       }
+            bean.forceWidthPercent = 1.0f;
+        } else {
+            Tool.newCustomDialog(bean);
+            dialog = bean.dialog;
+            bean.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
+            bean.forceWidthPercent = 1.0f;
+            bean.bgRes = R.color.dialogutil_bg_white;
+        }
         bean.dialog = dialog;
 
 
-        if(bean.bottomSheetStyle ==null){
-            bean.bottomSheetStyle =  BottomSheetStyle.newBuilder().build();
+        if (bean.bottomSheetStyle == null) {
+            bean.bottomSheetStyle = BottomSheetStyle.newBuilder().build();
         }
 
         BottomSheetHolder bottomSheetHolder = new BottomSheetHolder(bean.context);
-        bottomSheetHolder.assingDatasAndEvents(bean.context,bean);
+        bottomSheetHolder.assingDatasAndEvents(bean.context, bean);
         bean.viewHolder = bottomSheetHolder;
 
         dialog.setContentView(bottomSheetHolder.rootView);
@@ -210,17 +215,18 @@ public  class MyDialogBuilder {
         final BottomSheetDialog dialog = new BottomSheetDialog(bean.context);
         Tool.removeFromParent(bean.customView);
         dialog.setContentView(bean.customView);
-        bean.forceWidthPercent = 1.0f;
+        bean.forceWidthPercent = 1.0f; // 占比宽度是多少
         dialog.setCancelable(bean.cancelable);
         dialog.setCanceledOnTouchOutside(bean.outsideTouchable);
         bean.dialog = dialog;
     }
 
-    protected  ConfigBean buildLoading(ConfigBean bean){
-        View root = View.inflate(bean.context, R.layout.loading,null);
+    protected ConfigBean buildLoading(ConfigBean bean) {
+        // 这里的一步就是对Dialog中进行内容的填充,比如你想要的文字,动画等等.
+        View root = View.inflate(bean.context, R.layout.loading, null);
         ImageView gifMovieView = (ImageView) root.findViewById(R.id.iv_loading);
         AnimationDrawable drawable = (AnimationDrawable) gifMovieView.getDrawable();
-        if(drawable!=null){
+        if (drawable != null) {
             drawable.start();
         }
         TextView tvMsg = (TextView) root.findViewById(R.id.loading_msg);
@@ -230,29 +236,29 @@ public  class MyDialogBuilder {
     }
 
 
-    protected  ConfigBean buildMdLoading(ConfigBean bean){
-        View root = View.inflate(bean.context, R.layout.progressview_wrapconent,null);
+    protected ConfigBean buildMdLoading(ConfigBean bean) {
+        View root = View.inflate(bean.context, R.layout.progressview_wrapconent, null);
         TextView tvMsg = (TextView) root.findViewById(R.id.loading_msg);
         tvMsg.setText(bean.msg);
         bean.dialog.setContentView(root);
         return bean;
     }
 
-    protected  ConfigBean buildMdAlert(final ConfigBean bean){
+    protected ConfigBean buildMdAlert(final ConfigBean bean) {
         Tool.fixContext(bean);
         final AlertDialog.Builder builder = new AlertDialog.Builder(bean.context);
-        if(bean.customContentHolder ==null){
-            if(bean.type == DefaultConfig.TYPE_MD_INPUT){
+        if (bean.customContentHolder == null) {
+            if (bean.type == DefaultConfig.TYPE_MD_INPUT) {
                 MdInputHolder holder = new MdInputHolder(bean.context);
                 bean.viewHolder = holder;
                 bean.setNeedSoftKeyboard(true);
-                holder.assingDatasAndEvents(bean.context,bean);
+                holder.assingDatasAndEvents(bean.context, bean);
                 builder.setView(bean.viewHolder.rootView);
-            }else {
+            } else {
                 builder.setMessage(bean.msg);
             }
 
-        }else {
+        } else {
             builder.setView(bean.customContentHolder.rootView);
             //bean.customContentHolder.assingDatasAndEvents(Tool.fixContext(bean).context,bean);
         }
@@ -266,39 +272,36 @@ public  class MyDialogBuilder {
                         dialog.dismiss();
                     }
                 }).setNeutralButton(bean.text3, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            bean.listener.onThird();
-                            Tool.hideKeyBorad(bean);
-                            dialog.dismiss();
-                        }
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                bean.listener.onThird();
+                Tool.hideKeyBorad(bean);
+                dialog.dismiss();
+            }
         });
         AlertDialog dialog = builder.create();
-        
         dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override
             public void onCancel(DialogInterface dialog) {
                 Tool.hideKeyBorad(bean);
-                if(bean.listener!=null)
-                bean.listener.onCancle();
+                if (bean.listener != null)
+                    bean.listener.onCancle();
             }
         });
 
         dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialog) {
-                if(bean.listener !=null){
+                if (bean.listener != null) {
                     bean.listener.onDismiss();
                 }
             }
         });
-
-
         bean.alertDialog = dialog;
         return bean;
     }
 
-    protected  ConfigBean buildMdSingleChoose(final ConfigBean bean){
+    protected ConfigBean buildMdSingleChoose(final ConfigBean bean) {
         AlertDialog.Builder builder = new AlertDialog.Builder(bean.context);
         singleChosen = bean.defaultChosen;
         builder.setTitle(bean.title)
@@ -306,30 +309,30 @@ public  class MyDialogBuilder {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
 
-                        if (bean.listener != null){
+                        if (bean.listener != null) {
                             bean.listener.onFirst();
-                            bean.listener.onGetChoose(singleChosen,bean.wordsMd[singleChosen]);
+                            bean.listener.onGetChoose(singleChosen, bean.wordsMd[singleChosen]);
                         }
-                        Tool.dismiss(bean,true);
+                        Tool.dismiss(bean, true);
                     }
                 })
                 .setNegativeButton(bean.text2, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        if (bean.listener != null){
+                        if (bean.listener != null) {
                             bean.listener.onSecond();
                         }
                         Tool.dismiss(bean);
                     }
                 })
-                .setSingleChoiceItems( bean.wordsMd, bean.defaultChosen, new DialogInterface.OnClickListener() {
+                .setSingleChoiceItems(bean.wordsMd, bean.defaultChosen, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         singleChosen = i;
-                        if (bean.itemListener != null){
-                            bean.itemListener.onItemClick(bean.wordsMd[i],i);
+                        if (bean.itemListener != null) {
+                            bean.itemListener.onItemClick(bean.wordsMd[i], i);
                         }
-                        Tool.dismiss(bean,true);
+                        Tool.dismiss(bean, true);
 
                     }
                 });
@@ -337,41 +340,40 @@ public  class MyDialogBuilder {
         AlertDialog dialog = builder.create();// crash when context is not activity
         bean.alertDialog = dialog;
         //dialog.getWindow().getDecorView()
-       // addShaow(bean,dialog);
+        // addShaow(bean,dialog);
 
 
         return bean;
     }
 
 
-
-    protected  ConfigBean buildMdMultiChoose(final ConfigBean bean){
+    protected ConfigBean buildMdMultiChoose(final ConfigBean bean) {
         AlertDialog.Builder builder = new AlertDialog.Builder(bean.context);
         builder.setTitle(bean.title)
                 .setCancelable(true)
                 .setPositiveButton(bean.text1, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        if (bean.listener != null){
+                        if (bean.listener != null) {
                             bean.listener.onFirst();
                             bean.listener.onGetChoose(bean.checkedItems);
                             List<Integer> selectedIndex = new ArrayList<Integer>();
                             List<CharSequence> selectedStrs = new ArrayList<CharSequence>();
-                            for(int j=0;j<bean.checkedItems.length;j++){
-                                if(bean.checkedItems[j]){
+                            for (int j = 0; j < bean.checkedItems.length; j++) {
+                                if (bean.checkedItems[j]) {
                                     selectedIndex.add(j);
                                     selectedStrs.add(bean.wordsMd[j]);
                                 }
                             }
-                            bean.listener.onChoosen(selectedIndex,selectedStrs,bean.checkedItems);
+                            bean.listener.onChoosen(selectedIndex, selectedStrs, bean.checkedItems);
                         }
-                        Tool.dismiss(bean,true);
+                        Tool.dismiss(bean, true);
                     }
                 })
                 .setNegativeButton(bean.text2, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        if (bean.listener != null){
+                        if (bean.listener != null) {
                             bean.listener.onSecond();
                         }
                         Tool.dismiss(bean);
@@ -390,7 +392,7 @@ public  class MyDialogBuilder {
         return bean;
     }
 
-    protected  ConfigBean buildIosAlert(ConfigBean bean){
+    protected ConfigBean buildIosAlert(ConfigBean bean) {
         bean.isVertical = false;
         bean.hint1 = "";
         bean.hint2 = "";
@@ -398,7 +400,7 @@ public  class MyDialogBuilder {
         return bean;
     }
 
-    protected  ConfigBean buildIosAlertVertical(ConfigBean bean){
+    protected ConfigBean buildIosAlertVertical(ConfigBean bean) {
         bean.isVertical = true;
         bean.hint1 = "";
         bean.hint2 = "";
@@ -406,28 +408,28 @@ public  class MyDialogBuilder {
         return bean;
     }
 
-    protected  ConfigBean buildIosSingleChoose(ConfigBean bean){
+    protected ConfigBean buildIosSingleChoose(ConfigBean bean) {
         IosCenterItemHolder holder = new IosCenterItemHolder(bean.context);
         bean.viewHolder = holder;
 
         bean.dialog.setContentView(holder.rootView);
-        holder.assingDatasAndEvents(bean.context,bean);
+        holder.assingDatasAndEvents(bean.context, bean);
 
-        bean.viewHeight = Tool.mesureHeight(holder.rootView,holder.lv);
+        bean.viewHeight = Tool.mesureHeight(holder.rootView, holder.lv);
 
         Window window = bean.dialog.getWindow();
         window.setGravity(Gravity.CENTER);
         return bean;
     }
 
-    protected  ConfigBean buildBottomItemDialog(ConfigBean bean){
+    protected ConfigBean buildBottomItemDialog(ConfigBean bean) {
         IosActionSheetHolder holder = new IosActionSheetHolder(bean.context);
         bean.viewHolder = holder;
         bean.dialog.setContentView(holder.rootView);
 
-        holder.assingDatasAndEvents(bean.context,bean);
+        holder.assingDatasAndEvents(bean.context, bean);
 
-        bean.viewHeight = Tool.mesureHeight(holder.rootView,holder.lv);
+        bean.viewHeight = Tool.mesureHeight(holder.rootView, holder.lv);
 
         Window window = bean.dialog.getWindow();
         window.setGravity(Gravity.BOTTOM);
@@ -436,19 +438,19 @@ public  class MyDialogBuilder {
     }
 
 
-    protected  ConfigBean buildNormalInput(ConfigBean bean){
+    protected ConfigBean buildNormalInput(ConfigBean bean) {
         buildIosCommon(bean);
         return bean;
     }
 
-    private ConfigBean buildIosCommon(ConfigBean bean){
+    private ConfigBean buildIosCommon(ConfigBean bean) {
 
         IosAlertDialogHolder holder = new IosAlertDialogHolder(bean.context);
         bean.viewHolder = holder;
         bean.dialog.setContentView(holder.rootView);
-        holder.assingDatasAndEvents(bean.context,bean);
+        holder.assingDatasAndEvents(bean.context, bean);
 
-        int height = Tool.mesureHeight(holder.rootView,holder.tvMsg,holder.et1,holder.et2);
+        int height = Tool.mesureHeight(holder.rootView, holder.tvMsg, holder.et1, holder.et2);
         bean.viewHeight = height;
 
 
@@ -457,10 +459,4 @@ public  class MyDialogBuilder {
     }
 
 
-
-
-
-
-
-    
 }

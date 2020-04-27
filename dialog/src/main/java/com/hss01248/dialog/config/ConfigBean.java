@@ -64,6 +64,7 @@ public class ConfigBean extends MyDialogBuilder implements Styleable {
 
     /**
      * 边际的实际
+     *
      * @param xMarginLR
      * @return
      */
@@ -75,9 +76,7 @@ public class ConfigBean extends MyDialogBuilder implements Styleable {
     /**
      * 广告的关闭按钮跟主界面的左右margin
      */
-    public int xMarginLR  = 0;
-
-
+    public int xMarginLR = 0;
 
 
     /**
@@ -447,7 +446,6 @@ public class ConfigBean extends MyDialogBuilder implements Styleable {
             Intent intent = new Intent(activity, DialogUtil_DialogActivity.class);
             activity.startActivity(intent);
             showViewWhenActivityIsReady();
-
         }
     }
 
@@ -490,17 +488,20 @@ public class ConfigBean extends MyDialogBuilder implements Styleable {
 
     @Override
     public Dialog show() {
-        if(Thread.currentThread().getId() == Looper.getMainLooper().getThread().getId()){
-           return showInMainThread();
+        if (Thread.currentThread().getId() == Looper.getMainLooper().getThread().getId()) {
+            // 如果当前调用show方法的线程就是在UI线程中
+            // 那么执行下面的方法
+            return showInMainThread();
         }
-//说明不是主线程,需要做处理
+        //说明不是主线程,需要做处理
         final CountDownLatch latch = new CountDownLatch(1);
         final Dialog[] dialog = new Dialog[1];
 
         StyledDialog.getMainHandler().post(new Runnable() {
             @Override
             public void run() {
-                dialog[0] =   showInMainThread();
+                // 如果不是在主线程中创建的Dialog,最后还是通过Handler降Dialog用主线程show出来.
+                dialog[0] = showInMainThread();
                 latch.countDown();
             }
         });
@@ -510,13 +511,15 @@ public class ConfigBean extends MyDialogBuilder implements Styleable {
             e.printStackTrace();
         }
         return dialog[0];
-
-
     }
 
     private Dialog showInMainThread() {
+        // fixContext() 这个就是修复配置Dialog对象ConfigBean中的context变量.
+        // 如果为null,就取最顶层的context变量.
         Tool.fixContext(this);
         if (listener == null) {
+            // 如果Dialog配置对象ConfigBean中的回调变量为null
+            // 那么就创建listener
             Log.w("dialogutil", "dialog listener is null!");
             listener = new MyDialogListener() {
                 @Override
@@ -530,7 +533,9 @@ public class ConfigBean extends MyDialogBuilder implements Styleable {
                 }
             };
         }
+        // 这里做了很多事情
         buildByType(this);
+
         if (showAsActivity) {
             showAsActivityNow();
             return null;
@@ -541,8 +546,8 @@ public class ConfigBean extends MyDialogBuilder implements Styleable {
             return null;
         }
         if (dialog != null && !dialog.isShowing()) {
+            // 最终会走到这里将Dialog展示出来
             Tool.showDialog(dialog, this);
-
             return dialog;
         } else if (alertDialog != null && !alertDialog.isShowing()) {
             Tool.showDialog(alertDialog, this);

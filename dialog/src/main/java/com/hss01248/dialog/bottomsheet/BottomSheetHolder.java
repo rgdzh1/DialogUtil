@@ -67,10 +67,6 @@ public class BottomSheetHolder extends SuperLvHolder<ConfigBean> {
         }
 
         setMdBottomSheetDialogBehaviour(adapterView,context,bean);
-
-
-
-
     }
 
     private void setMdBottomSheetDialogBehaviour(AdapterView adapterView, Context context, final ConfigBean bean) {

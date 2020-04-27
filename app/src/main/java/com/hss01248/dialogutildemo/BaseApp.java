@@ -55,6 +55,7 @@ public class BaseApp extends Application {
 
             @Override
             public void onActivityPaused(Activity activity) {
+                // 删除一些没有用的Dialog
                 DialogsMaintainer.onPause(activity);
 
             }

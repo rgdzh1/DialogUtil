@@ -18,6 +18,8 @@ import java.util.List;
 
 /**
  * Created by Administrator on 2016/10/9 0009.
+ * 根据不同方法名构建不同的Dialog配置,
+ * Dialog配置由ConfigBean类来表示
  */
 public class DialogAssigner implements Assignable {
 
