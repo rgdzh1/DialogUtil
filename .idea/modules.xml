@@ -2,7 +2,10 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/Desktop-DialogUtil.iml" filepath="$PROJECT_DIR$/Desktop-DialogUtil.iml" group="DialogUtil" />
       <module fileurl="file://$PROJECT_DIR$/DialogUtil.iml" filepath="$PROJECT_DIR$/DialogUtil.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/DialogUtil-app.iml" filepath="$PROJECT_DIR$/app/DialogUtil-app.iml" group="DialogUtil/app" />
+      <module fileurl="file://$PROJECT_DIR$/dialog/DialogUtil-dialog.iml" filepath="$PROJECT_DIR$/dialog/DialogUtil-dialog.iml" group="DialogUtil/dialog" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/dialog/dialog.iml" filepath="$PROJECT_DIR$/dialog/dialog.iml" />
     </modules>

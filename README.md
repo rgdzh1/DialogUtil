@@ -2,63 +2,69 @@
 
 
 # DialogUtil
-common used dialog with material style ( in support v7)，ios style，get top activity automatically,can invoke show() everywhere (any thread , any window)
+material风格(v7支持包中的)，ios风格，自动获取顶层activity,可在任意界面弹出,可在任意线程弹出
 
 [![](https://jitpack.io/v/hss01248/DialogUtil.svg)](https://jitpack.io/#hss01248/DialogUtil)
 
-[中文ReadMe](README-ch.md)
-<br>
 [wiki](https://github.com/hss01248/DialogUtil/wiki)
-<br>
-<br>
-any problem or bug, join the qq group to get a quick response:
-<br>
-<br>
-<a target="_blank" href="//shang.qq.com/wpa/qunwpa?idkey=76d7e8396ae225861d714b7f1bb976e1a06c8a76cc35c532c113e892b2d49ff0"><img border="0" src="http://pub.idqqimg.com/wpa/images/group.png" alt="DialogUtil and Android" title="DialogUtil and Android"></a>
 
-# important points
+# 注意点
 
-* if you do not invoke setActivity(activit), please  invoke show() after in or after the activity onResume,or it may show in previous activity!
-* about BadWindowTokenException,see the blog:[关于dialog,PopupWindow,SoftInputBoard的弹出时机的问题](http://www.jianshu.com/p/bd98cee2854b)
-* if some chinese phone do not show dialog ,please invoke  setActivity(activit)
-* do not abuse loadingdialog:
+* 在activity已经resume后再调用,不要在onstart里用,否则可能会不显示. 见[关于dialog,PopupWindow,SoftInputBoard的弹出时机的问题](http://www.jianshu.com/p/bd98cee2854b)
+* 如果非要在onstart里,就记得调用setActivity()
+* 如果有的国产机不显示,就调用setActivity()
+* 不要滥用loadingdialog:
 
 
 
-> the right usage is :
+> 注意使用的场景:
 
 ```
- fist into the page/activity/fragment,use the loadingview inside your layout/xml,there is many statelayout lib,or you can use my: https://github.com/hss01248/PageStateManager
- refresh a part of the contentView,or click a button to request http,which has no effect on the whole contentview,then you can use the loadingDialog, just like the ajax in web.
+ 第一此进入页面,用layout内部的loadingview,有很多statelayout框架,也可以用我的这个:
+  https://github.com/hss01248/PageStateManager
+  再次刷新,用刷新头显示刷新状态
+  局部刷新或点击某按钮访问网络,用loading dialog,不影响页面本身状态,类似web中的ajax请求.
+  
 ```
 
-# features
+# 特性
 
-* include commo dialogs with material style ( in support v7)，ios style
-* **support  custom dialog** ,just deliver a view. you can retain the buttons and title with ios or material style,or hide them.
-
-
-* get the top activity automatically ,so no need to deliver the activity,also support show in paticular activity by setActivity(activity)
-* safety :can be invoked in any thread 
-* when the content is fullScreen ,it can adjust the margin automatically,also support set the **height percent and width percent**
-* has a shadow **backgroud** incase of the dimlayer not work,you can also disable it to show your own background in customview
-* chained api, easy to use
-* adapt to phone and tablet,high and low  resolution ratio screen 
-* support localization
-* **support three window types**: as a common dialog ,as a widow with TYPE_TOAST,as a activity with dialog style.
-* support show **softKeyboard** automatically ,just setNeedSoftKeyboard(true)
-* support **ad style** dialog
+* **自动获取顶层activity,**无需传入activity也可弹出dialog.如果传入,则指定在此activity弹出.
+* 安全,**任意线程**均可调用.
+* 类型丰富,包括常用的ios风格dialog和material design风格的dialog,且按钮和文字样式可便捷地修改
+* **自定义view**:可以传入自定义的view,定义好事件,本工具负责安全地显示
+* 也可以保留iso样式或material 样式的底部按钮和上方title(可隐藏),中间的view可以完全自定义
+* 考虑了显示内容超多时的滑动和与屏幕的间隙.
+* 也可以设置宽高百分比来**自定义宽高**
+* 可以关闭默认的阴影背景,从而能使用xml中**自定义的背景**(弹出自定义view的dialog时常用)
+* 支持国际化
+* **智能弹出和隐藏软键盘**.自定义view的dialog只要设置setNeedSoftKeyboard为true,即可自动处理软键盘的弹出和隐藏
+* ios样式和material 样式的均**可以在三种状态下显示**: 普通dialog,TYPE_TOAST,作为activity.(原生ProgressDialog和Design包下的BottomSheetDialog除外,其在TYPE_TOAST或activity显示有异样)
+* 支持带x的**广告样式**的动画
 
 
+# todo
 
 
-# effect pics
+md 单选多选颜色自定义
+progressdialog改成完全自定义的
+所有dialog : 增加动画的自定义
+
+选择https://github.com/liangchengcheng/android-loading-dialog中的一些好的效果加进来
+
+
+
+# 示例图
+
 
 https://github.com/hss01248/DialogUtil/wiki/0_types(%E6%89%80%E6%9C%89%E7%9A%84%E7%B1%BB%E5%9E%8B)
 
-# screen adapt
+# 适配情况
 
 https://github.com/hss01248/DialogUtil/wiki/screen-adapt(%E5%B1%8F%E5%B9%95%E9%80%82%E9%85%8D)
+
+
+
 
 # useage
 
@@ -89,19 +95,19 @@ Add it in your root build.gradle at the end of repositories:
 	         compile 'com.android.support:appcompat-v7:26.1.0'
    			 compile 'com.android.support:recyclerview-v7:26.1.0'
     		 compile 'com.android.support:design:26.1.0'
-    		 //change 26.1.0 to the same version as it in your module
+    		 //将26.1.0: 改为自己项目中一致的版本
 	}
 ```
 lastest release: https://github.com/hss01248/DialogUtil/releases
 
-## init
+## 初始化
 
 ```
-//in oncreate() of BaseApplication:
-
+//在Application的oncreate方法里:
+传入context
 StyledDialog.init(this);
 
-//get activity instance in ActivityLifecycleCallbacks:
+在activity生命周期callback中拿到顶层activity引用:
  registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks() {
             @Override
             public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
@@ -137,15 +143,16 @@ StyledDialog.init(this);
                 ActivityStackManager.getInstance().removeActivity(activity);
             }
         });
-```
-
-## demo code( in MainActivity)
 
 ```
-        //use default style:
+
+## 示例代码(MainActivity里)
+
+```
+        //使用默认样式时,无须.setxxx:
         StyledDialog.buildLoading().show();
         
-        //set some style:
+        //自定义部分样式时:
         StyledDialog.buildMdAlert("title", msg,  new MyDialogListener() {
                     @Override
                     public void onFirst() {
@@ -169,19 +176,19 @@ StyledDialog.init(this);
                         .show();
 ```
 
-# callback
+# 相关回调
 
 ## MyDialogListener
 
 ```
-	public abstract void onFirst();//md-sure button
-    public abstract void onSecond();//md-cancel button
-    public void onThird(){}//md-netural button
+	public abstract void onFirst();//md-确定,ios-第一个
+    public abstract void onSecond();//md-取消,ios-第二个
+    public void onThird(){}//md-netural,ios-第三个
 
     public void onCancle(){}
 
     /**
-     * callback for Input
+     * 提供给Input的回调
      * @param input1
      * @param input2
      */
@@ -190,7 +197,7 @@ StyledDialog.init(this);
     }
 
     /**
-     * callback for MdSingleChoose
+     * 提供给MdSingleChoose的回调
      * @param chosen
      * @param chosenTxt
      */
@@ -199,7 +206,7 @@ StyledDialog.init(this);
     }
 
     /**
-     * callback for MdMultiChoose
+     * 提供给MdMultiChoose的回调
      * @param states
      */
     public void onChoosen( List<Integer> selectedIndex, List<CharSequence> selectedStrs,boolean[] states){
@@ -211,7 +218,7 @@ StyledDialog.init(this);
 
 ```
  /**
-     * for IosSingleChoose,BottomItemDialog
+     * IosSingleChoose,BottomItemDialog的点击条目回调
      * @param text
      * @param position
      */
@@ -219,7 +226,7 @@ StyledDialog.init(this);
 
 
     /**
-     * for BottomItemDialog
+     * BottomItemDialog的底部按钮(经常是取消)的点击回调
      */
    public void onBottomBtnClick(){}
 ```
@@ -228,15 +235,15 @@ StyledDialog.init(this);
 
 
 
-# apis
+# 提供的api
 
-### build different dialogs :StyledDialog.buildxxx:
+### 各类dialog的初始参数传递和回调:StyledDialog.buildxxx:
 
  ![methodsofstyledialog](img0/methodsofstyledialog.jpg)
 
 
 
-## set custom style:setXxx
+## 自定义样式:setXxx
 
 
 
@@ -244,13 +251,13 @@ StyledDialog.init(this);
 
  
 
-##  finally ,you must invoke show(),it returns a dialog pbject
+## 最后必须调用show(),返回dialog对象
 
 
 
 
 
-# dismiss
+# 对话框的消失
 
 ```
 StyledDialog.dismiss(DialogInterface... dialogs);
@@ -258,17 +265,22 @@ StyledDialog.dismiss(DialogInterface... dialogs);
 
 
 
-## the loading dialog can be dismissed by call :
+## 两个loading对话框不需要对象就可以直接dismisss:
 
 ```
 StyledDialog.dismissLoading();
 ```
 
-### progress dialog  
+### progress dialog 的进度更新
 
 ```
 /**
- *  call anywhere
+ *  可以在任何线程调用
+ * @param dialog 传入show方法返回的对象
+ * @param progress
+ * @param max
+ * @param msg 如果是转圈圈,会将msg变成msg:78%的形式.如果是水平,msg不起作用
+ * @param isHorizontal 是水平线状,还是转圈圈
  */
 public static void updateProgress( Dialog dialog, int progress,  int max,  CharSequence msg,  boolean isHorizontal)
 ```
